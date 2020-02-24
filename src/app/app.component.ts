@@ -12,11 +12,9 @@ export class AppComponent {
   constructor(public translate: TranslateService) {
     translate.addLangs(["en", "sv", "nl"]);
     translate.setDefaultLang("en");
-    console.log(translate.getLangs());
   }
 
   switchLang(lang: string) {
-    console.log("Using", lang);
     this.translate.use(lang);
   }
 }

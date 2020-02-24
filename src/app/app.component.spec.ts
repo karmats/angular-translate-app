@@ -1,31 +1,82 @@
-import { TestBed, async } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import { TestBed, async } from "@angular/core/testing";
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from "@angular/common/http/testing";
+import { AppComponent } from "./app.component";
+import {
+  TranslateModule,
+  TranslateLoader,
+  TranslateService
+} from "@ngx-translate/core";
+import { httpLoaderFactory } from "./app.module";
+import { HttpClient } from "@angular/common/http";
 
-describe('AppComponent', () => {
+const TRANSLATIONS_EN = require("../assets/i18n/en.json");
+const TRANSLATIONS_SV = require("../assets/i18n/sv.json");
+
+describe("AppComponent", () => {
+  let translate: TranslateService;
+  let http: HttpTestingController;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
+      declarations: [AppComponent],
+      imports: [
+        HttpClientTestingModule,
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useFactory: httpLoaderFactory,
+            deps: [HttpClient]
+          }
+        })
       ],
+      providers: [TranslateService]
     }).compileComponents();
   }));
 
-  it('should create the app', () => {
+  it("should create the app", () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'angular-translate-app'`, () => {
+  it("should load translations", async(() => {
+    // spyOn(translate, "getBrowserLang").and.returnValue("en");
     const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('angular-translate-app');
-  });
+    const compiled = fixture.debugElement.nativeElement;
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    // the DOM should be empty for now since the translations haven't been rendered yet
+    expect(compiled.querySelector("a").textContent).toEqual("");
+
+    http.expectOne("/assets/i18n/en.json").flush(TRANSLATIONS_EN);
+    http.expectNone("/assets/i18n/sv.json");
+
+    // Finally, assert that there are no outstanding requests.
+    http.verify();
+
     fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('angular-translate-app app is running!');
-  });
+    // the content should be translated to english now
+    expect(compiled.querySelector("a").textContent).toEqual(
+      TRANSLATIONS_EN.HOME.TITLE
+    );
+
+    translate.use("fr");
+    http.expectOne("/assets/i18n/sv.json").flush(TRANSLATIONS_SV);
+
+    // Finally, assert that there are no outstanding requests.
+    http.verify();
+
+    // the content has not changed yet
+    expect(compiled.querySelector("a").textContent).toEqual(
+      TRANSLATIONS_EN.HOME.TITLE
+    );
+
+    fixture.detectChanges();
+    // the content should be translated to french now
+    expect(compiled.querySelector("a").textContent).toEqual(
+      TRANSLATIONS_SV.HOME.TITLE
+    );
+  }));
 });

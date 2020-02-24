@@ -14,7 +14,7 @@ import { AppComponent } from "./app.component";
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (http: HttpClient) => new TranslateHttpLoader(http),
+        useFactory: httpLoaderFactory,
         deps: [HttpClient]
       }
     })
@@ -23,3 +23,7 @@ import { AppComponent } from "./app.component";
   bootstrap: [AppComponent]
 })
 export class AppModule {}
+
+export function httpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
