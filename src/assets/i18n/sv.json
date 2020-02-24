@@ -1,0 +1,11 @@
+{
+  "Sitetitle": "Angular multi språk sida",
+  "Name": "Namn",
+  "NameError": "Jag är säker på att jag måste ha ett namn!",
+  "Email": "Mailadress",
+  "PhoneNo": "Telefonnummer",
+  "Password": "Lösenord",
+  "Bio": "Skriv några rader om dig själv",
+  "TermsConditions": "Jag godkänner",
+  "Submit": "Submit"
+}
