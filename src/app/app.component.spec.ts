@@ -34,6 +34,9 @@ describe("AppComponent", () => {
       ],
       providers: [TranslateService]
     }).compileComponents();
+
+    translate = TestBed.get(TranslateService);
+    http = TestBed.get(HttpTestingController);
   }));
 
   it("should create the app", () => {
@@ -43,7 +46,7 @@ describe("AppComponent", () => {
   });
 
   it("should load translations", async(() => {
-    // spyOn(translate, "getBrowserLang").and.returnValue("en");
+    spyOn(translate, "getBrowserLang").and.returnValue("en");
     const fixture = TestBed.createComponent(AppComponent);
     const compiled = fixture.debugElement.nativeElement;
 
@@ -58,25 +61,25 @@ describe("AppComponent", () => {
 
     fixture.detectChanges();
     // the content should be translated to english now
-    expect(compiled.querySelector("a").textContent).toEqual(
-      TRANSLATIONS_EN.HOME.TITLE
+    expect(compiled.querySelector("a").textContent.trim()).toEqual(
+      TRANSLATIONS_EN.Sitetitle
     );
 
-    translate.use("fr");
+    translate.use("sv");
     http.expectOne("/assets/i18n/sv.json").flush(TRANSLATIONS_SV);
 
     // Finally, assert that there are no outstanding requests.
     http.verify();
 
     // the content has not changed yet
-    expect(compiled.querySelector("a").textContent).toEqual(
-      TRANSLATIONS_EN.HOME.TITLE
+    expect(compiled.querySelector("a").textContent.trim()).toEqual(
+      TRANSLATIONS_EN.Sitetitle
     );
 
     fixture.detectChanges();
     // the content should be translated to french now
-    expect(compiled.querySelector("a").textContent).toEqual(
-      TRANSLATIONS_SV.HOME.TITLE
+    expect(compiled.querySelector("a").textContent.trim()).toEqual(
+      TRANSLATIONS_SV.Sitetitle
     );
   }));
 });
